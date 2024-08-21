@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Comparison App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css" />
+  <style>
+    /* General Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e0e0e0);
+      color: #333;
+    }
+
+    #root {
+      height: 100vh;
+    }
+
+    /* Navbar Styles */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      padding: 0 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .header .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .header .ant-menu {
+      line-height: 64px;
+    }
+
+    .header .ant-menu-item {
+      font-size: 16px;
+      color: #fff;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .header .ant-menu-item:hover {
+      background-color: #333 !important;
+      color: #fff;
+    }
+
+    /* Sidebar Styles */
+    .site-layout-background {
+      background: #fff;
+      height: 100vh;
+    }
+
+    .ant-layout-sider {
+      background-color: #001529;
+    }
+
+    .ant-menu-dark.ant-menu-inline {
+      background-color: #001529;
+    }
+
+    .ant-menu-item-selected {
+      background-color: #1890ff !important;
+    }
+
+    /* Content Area Styles */
+    .ant-layout-content {
+      margin: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table Styles */
+    .ant-table {
+      background: #fff;
+      border-radius: 8px;
+    }
+
+    .ant-table img {
+      border-radius: 4px;
+    }
+
+    /* Button Styles */
+    .ant-btn-primary {
+      background: linear-gradient(45deg, #00bcd4, #4caf50);
+      border-color: transparent;
+      color: white;
+      border-radius: 20px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .ant-btn-primary:hover {
+      background: linear-gradient(45deg, #03a9f4, #66bb6a);
+      border-color: transparent;
+      color: white;
+    }
+
+    .ant-btn-danger {
+      background: linear-gradient(45deg, #ff5722, #f44336);
+      border-color: transparent;
+      color: white;
+      border-radius: 20px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .ant-btn-danger:hover {
+      background: linear-gradient(45deg, #e64a19, #c62828);
+      border-color: transparent;
+      color: white;
+    }
+
+    .ant-btn-primary.ant-btn-disabled,
+    .ant-btn-danger.ant-btn-disabled {
+      background: #d9d9d9;
+      border-color: #d9d9d9;
+      color: #8c8c8c;
+    }
+
+    /* Modal Styles */
+    .ant-modal-header {
+      background-color: #000;
+      color: white;
+    }
+
+    .ant-modal-title {
+      color: white;
+    }
+
+    .ant-modal-content {
+      border-radius: 8px;
+    }
+
+    /* Hover Effects */
+    .ant-table-row:hover {
+      background-color: #e6f7ff !important;
+    }
+
+    .ant-menu-item:hover {
+      background-color: #333 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<!-- React, React Router DOM, and Ant Design JS files -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.3.0/react-router-dom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  const { Layout, Menu, Table, Button, Modal, message } = antd;
+  const { BrowserRouter, Route, Switch, Link, useHistory, useLocation } = ReactRouterDOM;
+  const { useState, useEffect } = React;
+  const { Header, Sider, Content } = Layout;
+
+  const Navbar = () => React.createElement(Header, { className: "header" },
+    React.createElement("div", { className: "logo" }, "Product Compare"),
+    React.createElement(Menu, { theme: "dark", mode: "horizontal", defaultSelectedKeys: ['1'] },
+      React.createElement(Menu.Item, { key: "1" }, React.createElement(Link, { to: "/" }, "Home")),
+      React.createElement(Menu.Item, { key: "2" }, React.createElement(Link, { to: "/compare" }, "Compare Products")),
+      React.createElement(Menu.Item, { key: "3" }, React.createElement(Link, { to: "/about" }, "About")),
+      React.createElement(Menu.Item, { key: "4" }, React.createElement(Link, { to: "/contact" }, "Contact"))
+    )
+  );
+
+  const Sidebar = () => React.createElement(Sider, { width: 200, className: "site-layout-background" },
+    React.createElement(Menu, { mode: "inline", defaultSelectedKeys: ['1'], style: { height: '100%', borderRight: 0 } },
+      React.createElement(Menu.Item, { key: "1" },
+        React.createElement(Link, { to: "/" }, "Product Details")
+      ),
+      React.createElement(Menu.Item, { key: "2" },
+        React.createElement(Link, { to: "/compare" }, "Compare Products")
+      )
+    )
+  );
+
+  const ProductDetails = () => {
+    const [products, setProducts] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const history = useHistory();
+
+    useEffect(() => {
+      axios.get('https://dummyjson.com/products')
+        .then(response => setProducts(response.data.products))
+        .catch(error => console.log(error));
+    }, []);
+
+    const handleCompare = (product) => {
+      if (!selectedProducts.includes(product.id)) {
+        setSelectedProducts([...selectedProducts, product.id]);
+        history.push('/compare', { products: [...selectedProducts, product.id] });
+      }
+    };
+
+    const columns = [
+      { title: 'Title', dataIndex: 'title', key: 'title' },
+      { title: 'Description', dataIndex: 'description', key: 'description' },
+      { title: 'Price', dataIndex: 'price', key: 'price', sorter: (a, b) => a.price - b.price },
+      { title: 'Discount', dataIndex: 'discountPercentage', key: 'discountPercentage' },
+      { title: 'Brand', dataIndex: 'brand', key: 'brand' },
+      { title: 'Category', dataIndex: 'category', key: 'category' },
+      { title: 'Image', dataIndex: 'thumbnail', key: 'thumbnail', render: (text) => React.createElement("img", { src: text, alt: "product", width: 50 }) },
+      {
+        title: 'Action',
+        key: 'action',
+        render: (_, record) => React.createElement(Button,
+          {
+            onClick: () => handleCompare(record),
+            disabled: selectedProducts.includes(record.id)
+          }, "Compare")
+      },
+    ];
+
+    return React.createElement(Table,
+      {
+        dataSource: products,
+        columns: columns,
+        rowKey: "id",
+        pagination: { pageSize: 5 }
+      }
+    );
+  };
+
+  const ComparePage = () => {
+    const location = useLocation();
+    const [selectedProducts, setSelectedProducts] = useState(location.state?.products || []);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const showModal = () => setIsModalVisible(true);
+    const handleCancel = () => setIsModalVisible(false);
+
+    const handleAddProducts = (newProducts) => {
+      setSelectedProducts(newProducts);
+      setIsModalVisible(false);
+    };
+
+    const columns = [
+      { title: 'Title', dataIndex: 'title', key: 'title' },
+      { title: 'Price', dataIndex: 'price', key: 'price' },
+      { title: 'Brand', dataIndex: 'brand', key: 'brand' },
+      { title: 'Category', dataIndex: 'category', key: 'category' },
+    ];
+
+    const data = selectedProducts.map(id => {
+      // Mock data for now, should fetch the product details
+      return { id, title: `Product ${id}`, price: `$${id * 10}`, brand: 'Brand', category: 'Category' };
+    });
+
+    return React.createElement("div", null,
+      React.createElement(Table, { dataSource: data, columns: columns, pagination: false }),
+      React.createElement(Button, { onClick: showModal, type: "primary" }, "Add More"),
+      React.createElement(Modal, { visible: isModalVisible, onCancel: handleCancel, footer: null },
+        React.createElement(AddMoreModal, { onAdd: handleAddProducts })
+      )
+    );
+  };
+
+  const AddMoreModal = ({ onAdd }) => {
+    const [products, setProducts] = useState([]);
+    const [selectedRows, setSelectedRows] = useState([]);
+
+    useEffect(() => {
+      axios.get('https://dummyjson.com/products')
+        .then(response => setProducts(response.data.products))
+        .catch(error => console.log(error));
+    }, []);
+
+    const columns = [
+      { title: 'Title', dataIndex: 'title', key: 'title' },
+      { title: 'Price', dataIndex: 'price', key: 'price' },
+      { title: 'Brand', dataIndex: 'brand', key: 'brand' },
+      { title: 'Category', dataIndex: 'category', key: 'category' },
+    ];
+
+    const handleAdd = () => {
+      if (selectedRows.length <= 4) {
+        onAdd(selectedRows);
+      } else {
+        message.warning('You can only add up to 4 products.');
+      }
+    };
+
+    return React.createElement(React.Fragment, null,
+      React.createElement(Table,
+        {
+          rowSelection: {
+            type: 'checkbox',
+            onChange: (selectedRowKeys) => setSelectedRows(selectedRowKeys),
+          },
+          dataSource: products,
+          columns: columns,
+          rowKey: "id",
+          pagination: { pageSize: 5 }
+        }
+      ),
+      React.createElement(Button, { onClick: handleAdd, type: "primary", style: { marginTop: '10px' } }, "Add Selected Products")
+    );
+  };
+
+  const App = () => React.createElement(BrowserRouter, null,
+    React.createElement(Layout, null,
+      React.createElement(Navbar, null),
+      React.createElement(Layout, null,
+        React.createElement(Sidebar, null),
+        React.createElement(Layout, { style: { padding: '0 24px 24px' } },
+          React.createElement(Content, null,
+            React.createElement(Switch, null,
+              React.createElement(Route, { exact: true, path: "/", component: ProductDetails }),
+              React.createElement(Route, { path: "/compare", component: ComparePage })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+</script>
+
+</body>
+</html>
